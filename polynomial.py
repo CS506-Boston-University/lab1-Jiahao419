@@ -1,3 +1,4 @@
+# --- X ---
 class X:
     def __init__(self):
         pass
@@ -6,16 +7,14 @@ class X:
         return "X"
 
     def evaluate(self, x_value):
-        # TODO: Implement evaluation for variable X
-        # Should return an Int object with the given x_value
-        pass
+        # 变量 X 的值就是传入的 x_value
+        return Int(x_value)
 
     def simplify(self):
-        # TODO (Optional Exercise): Implement simplification
-        # X cannot be simplified further, so return self
-        pass
+        return self
 
 
+# --- Int ---
 class Int:
     def __init__(self, i):
         self.i = i
@@ -24,16 +23,14 @@ class Int:
         return str(self.i)
 
     def evaluate(self, x_value):
-        # TODO: Implement evaluation for integer constant
-        # Should return an Int object with the stored integer value
-        pass
+        # 常量与 x 无关
+        return Int(self.i)
 
     def simplify(self):
-        # TODO (Optional Exercise): Implement simplification
-        # Integer constants cannot be simplified further, so return self
-        pass
+        return self
 
 
+# --- Add ---
 class Add:
     def __init__(self, p1, p2):
         self.p1 = p1
@@ -43,17 +40,15 @@ class Add:
         return repr(self.p1) + " + " + repr(self.p2)
 
     def evaluate(self, x_value):
-        # TODO: Implement evaluation for addition
-        # Should evaluate both operands and return their sum
-        pass
+        v1 = self.p1.evaluate(x_value).i
+        v2 = self.p2.evaluate(x_value).i
+        return Int(v1 + v2)
 
     def simplify(self):
-        # TODO (Optional Exercise): Implement simplification
-        # Examples: X + 0 -> X, 0 + X -> X, 3 + 5 -> 8
-        # Hint: Simplify operands first, then apply simplification rules
-        pass
+        return Add(self.p1, self.p2)  # 可选题再做
 
 
+# --- Mul ---
 class Mul:
     def __init__(self, p1, p2):
         self.p1 = p1
@@ -69,61 +64,63 @@ class Mul:
         return repr(self.p1) + " * " + repr(self.p2)
 
     def evaluate(self, x_value):
-        # TODO: Implement evaluation for multiplication
-        # Should evaluate both operands and return their product
-        pass
+        v1 = self.p1.evaluate(x_value).i
+        v2 = self.p2.evaluate(x_value).i
+        return Int(v1 * v2)
 
     def simplify(self):
-        # TODO (Optional Exercise): Implement simplification
-        # Examples: X * 0 -> 0, X * 1 -> X, 3 * 5 -> 15
-        # Hint: Simplify operands first, then apply simplification rules
-        pass
+        return Mul(self.p1, self.p2)  # 可选题再做
 
 
+# --- Sub ---
 class Sub:
     def __init__(self, p1, p2):
         self.p1 = p1
         self.p2 = p2
 
     def __repr__(self):
-        # TODO: Implement string representation for subtraction
-        # Should handle parentheses similar to Mul class
-        # Hint: Look at how Mul class handles parentheses
-        pass
+        if isinstance(self.p1, Add):
+            if isinstance(self.p2, Add):
+                return "( " + repr(self.p1) + " ) - ( " + repr(self.p2) + " )"
+            return "( " + repr(self.p1) + " ) - " + repr(self.p2)
+        if isinstance(self.p2, Add):
+            return repr(self.p1) + " - ( " + repr(self.p2) + " )"
+        return repr(self.p1) + " - " + repr(self.p2)
 
     def evaluate(self, x_value):
-        # TODO: Implement evaluation for subtraction
-        # Should return the difference of the two operands
-        pass
+        v1 = self.p1.evaluate(x_value).i
+        v2 = self.p2.evaluate(x_value).i
+        return Int(v1 - v2)
 
     def simplify(self):
-        # TODO (Optional Exercise): Implement simplification
-        # Examples: X - 0 -> X, 5 - 3 -> 2
-        # Hint: Simplify operands first, then apply simplification rules
-        pass
+        return Sub(self.p1, self.p2)  # 可选题再做
 
 
+# --- Div ---
 class Div:
     def __init__(self, p1, p2):
         self.p1 = p1
         self.p2 = p2
 
     def __repr__(self):
-        # TODO: Implement string representation for division
-        # Should handle parentheses similar to Mul class
-        # Hint: Look at how Mul class handles parentheses
-        pass
+        if isinstance(self.p1, Add):
+            if isinstance(self.p2, Add):
+                return "( " + repr(self.p1) + " ) / ( " + repr(self.p2) + " )"
+            return "( " + repr(self.p1) + " ) / " + repr(self.p2)
+        if isinstance(self.p2, Add):
+            return repr(self.p1) + " / ( " + repr(self.p2) + " )"
+        return repr(self.p1) + " / " + repr(self.p2)
 
     def evaluate(self, x_value):
-        # TODO: Implement evaluation for division
-        # Should return the quotient of the two operands (use integer division //)
-        pass
+        v1 = self.p1.evaluate(x_value).i
+        v2 = self.p2.evaluate(x_value).i
+        if v2 == 0:
+            raise ZeroDivisionError("Division by zero in polynomial evaluation")
+        return Int(v1 // v2)  # 按要求整数除法
 
     def simplify(self):
-        # TODO (Optional Exercise): Implement simplification
-        # Examples: X / 1 -> X, 6 / 2 -> 3
-        # Hint: Simplify operands first, then apply simplification rules
-        pass
+        return Div(self.p1, self.p2)  # 可选题再做
+
 
 
 # Original polynomial example
